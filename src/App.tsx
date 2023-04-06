@@ -1,11 +1,8 @@
 import React from "react";
+import PagesRoutes from "./pages-routes/PagesRoutes";
 
 function App() {
-  return (
-    <div>
-      <p>App</p>
-    </div>
-  );
+  return <PagesRoutes />;
 }
 
 export default App;
