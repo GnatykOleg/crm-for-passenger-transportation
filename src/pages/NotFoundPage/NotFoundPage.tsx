@@ -18,7 +18,9 @@ const PageNotFound: FC = () => {
         style={{ paddingTop: 40, marginBottom: 40 }}
       />
 
-      <Button onClick={() => navigate("/")}>Go to Home Page</Button>
+      <Button onClick={() => navigate("/", { replace: true })}>
+        Go main page
+      </Button>
     </Container>
   );
 };
