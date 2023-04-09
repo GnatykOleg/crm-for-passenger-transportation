@@ -1,5 +1,9 @@
-import { createSlice } from "@reduxjs/toolkit";
+// Import required dependencies:
 
+// Redux
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+
+// Redux operations
 import {
   facebookAuth,
   googleAuth,
@@ -7,23 +11,34 @@ import {
   loginByEmail,
   registrationByEmail,
   handleSignOut,
+  authStateChangeUser,
 } from "./authOpertions";
 
-import { IInitialState, LoginPayload } from "../../interfaces/redux-types";
+// Interfaces
+import {
+  IInitialState,
+  IOnAuthStateChangePayload,
+  LoginPayload,
+} from "../../interfaces/redux-types";
 
+// Initial state
 const initialState: IInitialState = {
   userId: null,
   nickname: null,
+  stateChange: null,
+  role: null,
+  email: null,
   loading: false,
   error: null,
 };
 
+// Auth Reducer
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    // USER REGISTRATION EMAIL
+    // User registration by email, password and nickname
     builder.addCase(registrationByEmail.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -33,7 +48,9 @@ const authSlice = createSlice({
       (state, { payload }: LoginPayload) => {
         state.userId = payload.uid;
         state.nickname = payload.displayName;
+        state.email = payload.email;
         state.loading = false;
+        state.role = payload.role;
       }
     );
     builder.addCase(registrationByEmail.rejected, (state, action) => {
@@ -41,18 +58,19 @@ const authSlice = createSlice({
       state.error = action.payload;
     });
 
-    // USER LOGIN EMAIL
-    builder.addCase(loginByEmail.pending, (state, action) => {
+    // User sign in by email and password
+    builder.addCase(loginByEmail.pending, (state) => {
       state.loading = true;
       state.error = null;
     });
     builder.addCase(
       loginByEmail.fulfilled,
       (state, { payload }: LoginPayload) => {
-        console.log("payload", payload);
         state.userId = payload.uid;
         state.nickname = payload.displayName;
+        state.email = payload.email;
         state.loading = false;
+        state.role = payload.role;
       }
     );
     builder.addCase(loginByEmail.rejected, (state, action) => {
@@ -60,7 +78,7 @@ const authSlice = createSlice({
       state.error = action.payload;
     });
 
-    // GOOGLE AUTH
+    // Google auth
     builder.addCase(googleAuth.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -70,6 +88,8 @@ const authSlice = createSlice({
       (state, { payload }: LoginPayload) => {
         state.userId = payload.uid;
         state.nickname = payload.displayName;
+        state.email = payload.email;
+        state.role = payload.role;
         state.loading = false;
       }
     );
@@ -78,7 +98,7 @@ const authSlice = createSlice({
       state.error = action.payload;
     });
 
-    // FACEBOOK AUTH
+    // Facebook auth
     builder.addCase(facebookAuth.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -88,6 +108,8 @@ const authSlice = createSlice({
       (state, { payload }: LoginPayload) => {
         state.userId = payload.uid;
         state.nickname = payload.displayName;
+        state.email = payload.email;
+        state.role = payload.role;
         state.loading = false;
       }
     );
@@ -96,7 +118,7 @@ const authSlice = createSlice({
       state.error = action.payload;
     });
 
-    // PHONE AUTH
+    // Auth by phone number
     builder.addCase(phoneAuth.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -104,6 +126,8 @@ const authSlice = createSlice({
     builder.addCase(phoneAuth.fulfilled, (state, { payload }: LoginPayload) => {
       state.userId = payload.uid;
       state.nickname = payload.displayName;
+      state.email = payload.email;
+      state.role = payload.role;
       state.loading = false;
     });
     builder.addCase(phoneAuth.rejected, (state, action) => {
@@ -111,15 +135,46 @@ const authSlice = createSlice({
       state.error = action.payload;
     });
 
-    // EXIT USER
-    builder.addCase(handleSignOut.pending, (state, _) => {
+    // On auth state change
+    builder.addCase(authStateChangeUser.pending, (state, _) => {
       state.loading = true;
       state.error = null;
     });
-    builder.addCase(handleSignOut.fulfilled, (state, _) => {
-      state.userId = null;
-      state.nickname = null;
+    builder.addCase(
+      authStateChangeUser.fulfilled,
+      (
+        state,
+        {
+          payload: { uid, displayName, email, stateChange, role },
+        }: PayloadAction<IOnAuthStateChangePayload>
+      ) => {
+        state.loading = false;
+        state.error = null;
+        state.nickname = displayName;
+        state.userId = uid;
+        state.stateChange = stateChange;
+        state.email = email;
+        state.role = role;
+      }
+    );
+    builder.addCase(authStateChangeUser.rejected, (state, action) => {
+      state.error = action.payload;
       state.loading = false;
+    });
+
+    // User sign out
+    builder.addCase(handleSignOut.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(handleSignOut.fulfilled, (state) => {
+      state.loading = false;
+      state.error = null;
+      state.nickname = null;
+      state.userId = null;
+      state.stateChange = null;
+      state.email = null;
+      state.role = null;
     });
     builder.addCase(handleSignOut.rejected, (state, action) => {
       state.loading = false;
@@ -128,4 +183,5 @@ const authSlice = createSlice({
   },
 });
 
+// Export reducer from slice
 export default authSlice.reducer;

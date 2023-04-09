@@ -1,26 +1,50 @@
+// Import required dependencies:
+
+// Redux
 import { createAsyncThunk, nanoid } from "@reduxjs/toolkit";
+
+// Firebase
 import {
   ConfirmationResult,
   FacebookAuthProvider,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
+  getAdditionalUserInfo,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
   updateProfile,
 } from "firebase/auth";
+
 import { auth, firestore } from "../../firebase/firebase-config";
-import { toast } from "react-toastify";
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
-import { authBySocialNetwork } from "../../hooks/authBySocialNetwork";
-import { IUserNameAndID } from "../../interfaces/redux-types";
+
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+
+// Constants
 import { ROLES } from "../../consts/roles";
+
 import { COLLECTIONS_NAME } from "../../consts/collections";
 
-// USER REGISTRATION WITH EMAIL
+// Hooks
+import { signInBySocialsAndEmail } from "../../hooks/signInBySocialsAndEmail";
+
+import { getUserDoc } from "../../hooks/getUserDoc";
+
+// Interfaces
+import {
+  IOnAuthStateChangePayload,
+  IPhoneAuthProps,
+  IRegistrationByEmailProps,
+  IUser,
+} from "../../interfaces/redux-types";
+
+// Toast library
+import { toast } from "react-toastify";
+
+// User registration by email, password and nickname
 export const registrationByEmail = createAsyncThunk<
-  IUserNameAndID,
-  { email: string; password: string; nickname?: string },
+  IUser,
+  IRegistrationByEmailProps,
   { rejectValue: string }
 >(
   "auth/signup-by-email",
@@ -30,7 +54,7 @@ export const registrationByEmail = createAsyncThunk<
       // Create user with email and password
       await createUserWithEmailAndPassword(auth, email, password);
 
-      // Get user
+      // Get current user
       const user = auth.currentUser!!;
 
       // Add to user displayName as nickname from params
@@ -38,59 +62,86 @@ export const registrationByEmail = createAsyncThunk<
         displayName: nickname,
       });
 
-      // Create toast information for user
+      // Create toast information for user for Successful sign up
       toast.success("Successful sign up");
 
       // Destructuring data from the user
       const { displayName, uid } = user;
 
-      // Add user info to firestore
-      await addDoc(collection(firestore, COLLECTIONS_NAME.USERS), {
+      // Get doc of this user
+      const userDoc = await getUserDoc({
+        value: email,
+        valueName: "email",
+      });
+
+      // If the document for the user exists, we update its data.
+      // If suddenly the user himself is not there, but there is a document for this email
+      // Цe must set up - to - date data for protection purposes.
+      // As an example, if an administrator deleted a user with the Driver role
+      // Nut forgot to delete the document for him, when the user re - registers we should give him No role.
+      // And update his nickname if the user decides to change it.
+      if (userDoc.docId) {
+        await updateDoc(doc(firestore, COLLECTIONS_NAME.USERS, userDoc.docId), {
+          displayName,
+          uid,
+          role: ROLES.NO_ROLE,
+        });
+      }
+
+      // If there is no document for this user when registering, we create it
+      if (!userDoc.docId)
+        await addDoc(collection(firestore, COLLECTIONS_NAME.USERS), {
+          displayName,
+          uid,
+          email,
+          // We set no role, since then the administrator will give them after
+          role: ROLES.NO_ROLE,
+        });
+
+      // Return data
+      return {
         displayName,
         uid,
         email,
-        role: ROLES.PASSANGER,
-      });
-
-      // Return data
-      return { displayName, uid };
+        // We set no role, since then the administrator will give them after
+        role: ROLES.NO_ROLE,
+      };
     } catch (error: any) {
+      // Catch and throw error with Toast message
       toast.error(error.message);
       return rejectWithValue(error.message);
     }
   }
 );
 
-// USER LOGIN WITH EMAIL AND PASSWORD
+// User sign in with email and password
 export const loginByEmail = createAsyncThunk<
-  IUserNameAndID,
+  IUser,
   { email: string; password: string },
   { rejectValue: string }
 >("auth/signin-by-email", async ({ email, password }, { rejectWithValue }) => {
   try {
     // Sign in user with email and password
-    await signInWithEmailAndPassword(auth, email, password);
+    const signInUser = await signInWithEmailAndPassword(auth, email, password);
 
-    // Get user
-    const user = auth.currentUser!!;
+    // Obtaining up-to-date information about the user to obtain the status of a new user
+    const userInfo = getAdditionalUserInfo(signInUser);
 
-    // Create toast information for user
-    toast.success("Successful sign in");
+    // Custom hook for sign in user, get or add data to Firestore
+    const result = await signInBySocialsAndEmail(userInfo?.isNewUser);
 
-    // Destructuring data from the user
-    const { displayName, uid } = user;
-
-    // Return data
-    return { displayName, uid };
+    // Return result of signInBySocialsAndEmail call
+    return result;
   } catch (error: any) {
+    // Catch and throw error with Toast message
     toast.error(error.message);
     return rejectWithValue(error.message);
   }
 });
 
-//  GOOGLE AUTH
+//  Google auth
 export const googleAuth = createAsyncThunk<
-  IUserNameAndID,
+  IUser,
   undefined,
   { rejectValue: string }
 >(
@@ -98,118 +149,183 @@ export const googleAuth = createAsyncThunk<
 
   async (_, { rejectWithValue }) => {
     try {
-      // Create instanse of auth method
+      // Create instanse of GoogleAuthProvider
       const google = new GoogleAuthProvider();
 
-      // Enter with google
-      await signInWithPopup(auth, google);
+      // Sign in user with google auth
+      const signInUser = await signInWithPopup(auth, google);
 
-      // Get user data, and create user in firestore
-      const result = await authBySocialNetwork();
+      // Obtaining up-to-date information about the user to obtain the status of a new user
+      const userInfo = getAdditionalUserInfo(signInUser);
 
-      // Return user data
+      // Custom hook for sign in user, get or add data to Firestore
+      const result = await signInBySocialsAndEmail(userInfo?.isNewUser);
+
+      // Return result of signInBySocialsAndEmail call
       return result;
     } catch (error: any) {
+      // Catch and throw error with Toast message
       toast.error(error.message);
       return rejectWithValue(error.message);
     }
   }
 );
 
-// FACEBOOK AUTH
+// Facebook auth
 export const facebookAuth = createAsyncThunk<
-  IUserNameAndID,
+  IUser,
   undefined,
   { rejectValue: string }
 >("auth/facebook-auth", async (_, { rejectWithValue }) => {
   try {
-    // Create instanse of auth method
+    // Create instanse of FacebookAuthProvider
     const facebook = new FacebookAuthProvider();
 
-    // Enter with facebook
-    await signInWithPopup(auth, facebook);
+    // Sign in user with facebook auth
+    const signInUser = await signInWithPopup(auth, facebook);
 
-    // Get user data, and create user in firestore
-    const result = await authBySocialNetwork();
+    // Obtaining up-to-date information about the user to obtain the status of a new user
+    const userInfo = getAdditionalUserInfo(signInUser);
 
-    // Return user data
+    // Custom hook for sign in user, get or add data to Firestore
+    const result = await signInBySocialsAndEmail(userInfo?.isNewUser);
+
+    // Return result of signInBySocialsAndEmail call
     return result;
   } catch (error: any) {
+    // Catch and throw error with Toast message
     toast.error(error.message);
     return rejectWithValue(error.message);
   }
 });
 
-// PHONE AUTH
+// Auth by phone number
 export const phoneAuth = createAsyncThunk<
-  IUserNameAndID,
-  { OTP: string; captchaConfirmObj: ConfirmationResult | undefined },
+  IUser,
+  IPhoneAuthProps,
   { rejectValue: string }
 >(
   "auth/phone-auth",
 
   async ({ OTP, captchaConfirmObj }, { rejectWithValue }) => {
     try {
-      // Check is captcha has confirm object
-      if (captchaConfirmObj) await captchaConfirmObj.confirm(OTP);
+      // Get confirmation result from captcha confirm object
+      const signInUser = await captchaConfirmObj?.confirm(OTP);
 
-      // Get user
+      // Obtaining up-to-date information about the user to obtain the status of a new user
+      const userInfo = getAdditionalUserInfo(signInUser!!);
+
+      // Get current user
       const user = auth.currentUser!!;
 
-      // Add to user displayName as rundom value
+      // Add to user displayName as nickname using nanoid()
       await updateProfile(user, {
         displayName: `USER=${nanoid()}`,
       });
 
-      // Create toast information for user
+      // Create toast information for user for Successful sign in
       toast.success("Successful sign in");
 
-      // Destructuring data from the user
-      const { phoneNumber, uid } = user;
+      const { phoneNumber, uid } = user!!;
 
-      // Get ref of collection
-      const usersRef = collection(firestore, COLLECTIONS_NAME.USERS);
+      // Get doc of this user
+      const userDoc = await getUserDoc({
+        value: phoneNumber,
+        valueName: "phoneNumber",
+      });
 
-      // Search query in collection
-      const searchQuery = query(
-        usersRef,
-        where("phoneNumber", "==", phoneNumber)
-      );
+      // When logging in, if a document exists for this user and it is NOT a new user.
+      // We update the data(since the example administator can change user name
+      if (userDoc.docId && !userInfo?.isNewUser) {
+        await updateDoc(doc(firestore, COLLECTIONS_NAME.USERS, userDoc.docId), {
+          displayName: userDoc.userData.displayName,
+          uid,
+        });
+      }
 
-      // Check if document in collection whith searchValue exist
-      const snapshot = await getDocs(searchQuery);
+      // When logging in, if the document for this user exists and it is a NEW USER. We are updating the data.
+      // Since the administrator could delete the user, but not his document.
+      // And the user could still have a role, for example Driver, for security reasons, we always set the role of a new user to NO ROLE
+      if (userDoc.docId && userInfo?.isNewUser) {
+        await updateDoc(doc(firestore, COLLECTIONS_NAME.USERS, userDoc.docId), {
+          displayName: `USER=${nanoid()}`,
+          uid,
+          phoneNumber,
+          role: ROLES.NO_ROLE,
+        });
+      }
 
-      // If document with this email, doesnt exist, we create document
-      if (snapshot.empty)
+      // If there is no document for this user when sign in, we create it
+      // Maybe the document was not added, or an error occurred.
+      if (!userDoc.docId)
         await addDoc(collection(firestore, COLLECTIONS_NAME.USERS), {
           displayName: `USER=${nanoid()}`,
           phoneNumber,
           uid,
-          role: ROLES.PASSANGER,
+          role: ROLES.NO_ROLE,
         });
 
-      // Always return data
-      return { displayName: `USER=${nanoid()}`, uid };
+      // Get corrent info for first render, if we update document
+      const userDocChanged = await getUserDoc({
+        value: phoneNumber,
+        valueName: "phoneNumber",
+      });
+
+      // Return data
+      return {
+        // If userDocChanged.userData exist we set displayName from Firestore else we set displayName with nanoid()
+        displayName: userDocChanged.userData
+          ? userDocChanged.userData.displayName
+          : `USER=${nanoid()}`,
+        uid,
+        // If userDocChanged.userData exist we set role from Firestore else we set NO ROLE
+        role: userDocChanged.userData
+          ? userDocChanged.userData.role
+          : ROLES.NO_ROLE,
+        email: null,
+      };
     } catch (error: any) {
+      // Catch and throw error with Toast message
       toast.error(error.message);
       return rejectWithValue(error.message);
     }
   }
 );
 
-// EXIT USER
+/// On auth state change
+export const authStateChangeUser = createAsyncThunk<
+  IOnAuthStateChangePayload,
+  IOnAuthStateChangePayload,
+  { rejectValue: string }
+>(
+  "auth/auth-state-change",
+  async (
+    { uid, displayName, email, stateChange, role },
+    { rejectWithValue }
+  ) => {
+    try {
+      // Return actual user data
+      return { uid, displayName, email, stateChange, role };
+    } catch (error: any) {
+      // Catch and throw error with Toast message
+      toast.error(error.message);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// User sign out
 export const handleSignOut = createAsyncThunk<
   undefined,
   undefined,
   { rejectValue: string }
 >("auth/signout", async (_, { rejectWithValue }) => {
   try {
-    // Sign out user
+    // Sign out user fir firebase method
     await signOut(auth);
   } catch (error: any) {
+    // Catch and throw error with Toast message
     toast.error(error.message);
     return rejectWithValue(error.message);
   }
 });
-
-// +1 650-555-1234
