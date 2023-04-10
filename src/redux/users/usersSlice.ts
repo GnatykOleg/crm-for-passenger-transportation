@@ -4,7 +4,14 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 // Operations
-import { changeUserRole, getAllUsers } from "./usersOperations";
+import {
+  changeUserNickname,
+  changeUserRole,
+  getAllDrivers,
+  getAllPassangers,
+  getAllUsers,
+  getTripsForDriver,
+} from "./usersOperations";
 
 // Interfaces
 import { IUserDoc, IUsersSliceState } from "../../interfaces/redux-types";
@@ -12,12 +19,15 @@ import { IUserDoc, IUsersSliceState } from "../../interfaces/redux-types";
 // Initial state
 const initialState: IUsersSliceState = {
   users: null,
+  drivers: null,
+  passangers: null,
+  tripsForDriver: null,
   loading: false,
   error: null,
 };
 
-// Auth Reducer
-const userSlice = createSlice({
+// Users Reducer
+const usersSlice = createSlice({
   name: "users",
   initialState,
   reducers: {},
@@ -30,13 +40,66 @@ const userSlice = createSlice({
     builder.addCase(
       getAllUsers.fulfilled,
       (state, { payload }: PayloadAction<Array<IUserDoc>>) => {
-        console.log("payload", payload);
         state.users = payload;
         state.loading = false;
         state.error = null;
       }
     );
     builder.addCase(getAllUsers.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
+
+    //  Get Drivers
+    builder.addCase(getAllDrivers.pending, (state, _) => {
+      state.error = null;
+      state.loading = true;
+    });
+    builder.addCase(
+      getAllDrivers.fulfilled,
+      (state, { payload }: PayloadAction<Array<IUserDoc>>) => {
+        state.drivers = payload;
+        state.loading = false;
+        state.error = null;
+      }
+    );
+    builder.addCase(getAllDrivers.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
+
+    // Get all passangers
+    builder.addCase(getAllPassangers.pending, (state, _) => {
+      state.error = null;
+      state.loading = true;
+    });
+    builder.addCase(
+      getAllPassangers.fulfilled,
+      (state, { payload }: PayloadAction<any>) => {
+        state.passangers = payload;
+        state.loading = false;
+        state.error = null;
+      }
+    );
+    builder.addCase(getAllPassangers.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
+
+    // Get trips for driver
+    builder.addCase(getTripsForDriver.pending, (state, _) => {
+      state.error = null;
+      state.loading = true;
+    });
+    builder.addCase(
+      getTripsForDriver.fulfilled,
+      (state, { payload }: PayloadAction<any>) => {
+        state.tripsForDriver = payload;
+        state.loading = false;
+        state.error = null;
+      }
+    );
+    builder.addCase(getTripsForDriver.rejected, (state, action) => {
       state.error = action.payload;
       state.loading = false;
     });
@@ -54,8 +117,22 @@ const userSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     });
+
+    // Change user nickname
+    builder.addCase(changeUserNickname.pending, (state, _) => {
+      state.error = null;
+      state.loading = true;
+    });
+    builder.addCase(changeUserNickname.fulfilled, (state) => {
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(changeUserNickname.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
   },
 });
 
 // Export reducer from slice
-export default userSlice.reducer;
+export default usersSlice.reducer;
