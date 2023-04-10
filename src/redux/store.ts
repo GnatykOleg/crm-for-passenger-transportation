@@ -1,11 +1,13 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authSlice from "./auth/authSlice";
 import usersSlice from "./users/usersSlice";
+import tripsSlice from "./trips/tripsSlice";
 // ...
 
 const rootReducer = combineReducers({
   auth: authSlice,
   users: usersSlice,
+  trips: tripsSlice,
 });
 
 export const store = configureStore({
