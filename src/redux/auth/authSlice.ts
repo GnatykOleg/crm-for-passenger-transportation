@@ -16,18 +16,19 @@ import {
 
 // Interfaces
 import {
-  IInitialState,
+  IAuthSliceState,
   IOnAuthStateChangePayload,
   LoginPayload,
 } from "../../interfaces/redux-types";
 
 // Initial state
-const initialState: IInitialState = {
+const initialState: IAuthSliceState = {
   userId: null,
   nickname: null,
   stateChange: null,
   role: null,
   email: null,
+  phoneNumber: null,
   loading: false,
   error: null,
 };
@@ -126,6 +127,7 @@ const authSlice = createSlice({
     builder.addCase(phoneAuth.fulfilled, (state, { payload }: LoginPayload) => {
       state.userId = payload.uid;
       state.nickname = payload.displayName;
+      state.phoneNumber = payload.phoneNumber;
       state.email = payload.email;
       state.role = payload.role;
       state.loading = false;
@@ -145,13 +147,14 @@ const authSlice = createSlice({
       (
         state,
         {
-          payload: { uid, displayName, email, stateChange, role },
+          payload: { uid, displayName, email, stateChange, role, phoneNumber },
         }: PayloadAction<IOnAuthStateChangePayload>
       ) => {
         state.loading = false;
         state.error = null;
         state.nickname = displayName;
         state.userId = uid;
+        state.phoneNumber = phoneNumber;
         state.stateChange = stateChange;
         state.email = email;
         state.role = role;
@@ -175,6 +178,7 @@ const authSlice = createSlice({
       state.stateChange = null;
       state.email = null;
       state.role = null;
+      state.phoneNumber = null;
     });
     builder.addCase(handleSignOut.rejected, (state, action) => {
       state.loading = false;
