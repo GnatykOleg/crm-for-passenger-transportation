@@ -5,7 +5,6 @@ import { createAsyncThunk, nanoid } from "@reduxjs/toolkit";
 
 // Firebase
 import {
-  ConfirmationResult,
   FacebookAuthProvider,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
@@ -35,7 +34,7 @@ import {
   IOnAuthStateChangePayload,
   IPhoneAuthProps,
   IRegistrationByEmailProps,
-  IUser,
+  IAuth,
 } from "../../interfaces/redux-types";
 
 // Toast library
@@ -43,7 +42,7 @@ import { toast } from "react-toastify";
 
 // User registration by email, password and nickname
 export const registrationByEmail = createAsyncThunk<
-  IUser,
+  IAuth,
   IRegistrationByEmailProps,
   { rejectValue: string }
 >(
@@ -116,7 +115,7 @@ export const registrationByEmail = createAsyncThunk<
 
 // User sign in with email and password
 export const loginByEmail = createAsyncThunk<
-  IUser,
+  IAuth,
   { email: string; password: string },
   { rejectValue: string }
 >("auth/signin-by-email", async ({ email, password }, { rejectWithValue }) => {
@@ -141,7 +140,7 @@ export const loginByEmail = createAsyncThunk<
 
 //  Google auth
 export const googleAuth = createAsyncThunk<
-  IUser,
+  IAuth,
   undefined,
   { rejectValue: string }
 >(
@@ -173,7 +172,7 @@ export const googleAuth = createAsyncThunk<
 
 // Facebook auth
 export const facebookAuth = createAsyncThunk<
-  IUser,
+  IAuth,
   undefined,
   { rejectValue: string }
 >("auth/facebook-auth", async (_, { rejectWithValue }) => {
@@ -201,7 +200,7 @@ export const facebookAuth = createAsyncThunk<
 
 // Auth by phone number
 export const phoneAuth = createAsyncThunk<
-  IUser,
+  IAuth,
   IPhoneAuthProps,
   { rejectValue: string }
 >(
@@ -218,11 +217,6 @@ export const phoneAuth = createAsyncThunk<
       // Get current user
       const user = auth.currentUser!!;
 
-      // Add to user displayName as nickname using nanoid()
-      await updateProfile(user, {
-        displayName: `USER=${nanoid()}`,
-      });
-
       // Create toast information for user for Successful sign in
       toast.success("Successful sign in");
 
@@ -235,35 +229,38 @@ export const phoneAuth = createAsyncThunk<
       });
 
       // When logging in, if a document exists for this user and it is NOT a new user.
-      // We update the data(since the example administator can change user name
-      if (userDoc.docId && !userInfo?.isNewUser) {
-        await updateDoc(doc(firestore, COLLECTIONS_NAME.USERS, userDoc.docId), {
+      // We update the data(since the example when authorizing through Google
+      // Administrator can change name in document, and we update from document to user object display name
+      if (userDoc.docId && !userInfo?.isNewUser)
+        await updateProfile(user, {
           displayName: userDoc.userData.displayName,
-          uid,
         });
-      }
 
       // When logging in, if the document for this user exists and it is a NEW USER. We are updating the data.
       // Since the administrator could delete the user, but not his document.
       // And the user could still have a role, for example Driver, for security reasons, we always set the role of a new user to NO ROLE
       if (userDoc.docId && userInfo?.isNewUser) {
         await updateDoc(doc(firestore, COLLECTIONS_NAME.USERS, userDoc.docId), {
-          displayName: `USER=${nanoid()}`,
+          displayName: `user=>${nanoid()}`,
           uid,
           phoneNumber,
           role: ROLES.NO_ROLE,
         });
+
+        // Add to user displayName as nickname using nanoid()
+        await updateProfile(user, { displayName: `user=>${nanoid()}` });
       }
 
       // If there is no document for this user when sign in, we create it
       // Maybe the document was not added, or an error occurred.
-      if (!userDoc.docId)
+      if (!userDoc.docId) {
         await addDoc(collection(firestore, COLLECTIONS_NAME.USERS), {
-          displayName: `USER=${nanoid()}`,
+          displayName: `user=>${nanoid()}`,
           phoneNumber,
           uid,
           role: ROLES.NO_ROLE,
         });
+      }
 
       // Get corrent info for first render, if we update document
       const userDocChanged = await getUserDoc({
@@ -276,13 +273,14 @@ export const phoneAuth = createAsyncThunk<
         // If userDocChanged.userData exist we set displayName from Firestore else we set displayName with nanoid()
         displayName: userDocChanged.userData
           ? userDocChanged.userData.displayName
-          : `USER=${nanoid()}`,
+          : `user=>${nanoid()}`,
         uid,
         // If userDocChanged.userData exist we set role from Firestore else we set NO ROLE
         role: userDocChanged.userData
           ? userDocChanged.userData.role
           : ROLES.NO_ROLE,
         email: null,
+        phoneNumber,
       };
     } catch (error: any) {
       // Catch and throw error with Toast message
@@ -300,12 +298,12 @@ export const authStateChangeUser = createAsyncThunk<
 >(
   "auth/auth-state-change",
   async (
-    { uid, displayName, email, stateChange, role },
+    { uid, displayName, email, stateChange, role, phoneNumber },
     { rejectWithValue }
   ) => {
     try {
       // Return actual user data
-      return { uid, displayName, email, stateChange, role };
+      return { uid, displayName, email, stateChange, role, phoneNumber };
     } catch (error: any) {
       // Catch and throw error with Toast message
       toast.error(error.message);
