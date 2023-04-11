@@ -142,7 +142,7 @@ const AddTripForm: FC = () => {
       return toast.warn("There are more passengers than a car can take");
 
     // Reset form values
-    // resetForm();
+    resetForm();
 
     // Add trip to redux
     dispatch(
