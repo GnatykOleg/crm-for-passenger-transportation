@@ -101,12 +101,15 @@ const TripCard: FC<ITripCardProps> = ({
         {/* Access to buttons EDIT and DELETE only for DISPATCHER and ADMIN */}
         {access && (
           <ListGroup.Item className="d-flex justify-content-between">
-            <Button onClick={() => handleOpenEdit(docID)} variant="primary">
+            <Button
+              onClick={() => handleOpenEdit && handleOpenEdit(docID)}
+              variant="primary"
+            >
               Edit
             </Button>
 
             <Button
-              onClick={() => handleOpenDelete(docID)}
+              onClick={() => handleOpenDelete && handleOpenDelete(docID)}
               variant="outline-danger"
             >
               Delete trip
