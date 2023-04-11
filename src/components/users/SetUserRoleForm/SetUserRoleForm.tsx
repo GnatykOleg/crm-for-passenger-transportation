@@ -22,7 +22,8 @@ import {
 // React Bootstrap
 import { Badge, Button, Form } from "react-bootstrap";
 
-import MyModal from "../../common/MyModal/MyModal";
+// Components
+import { MyModal } from "../..";
 
 // React select
 import Select from "react-select";

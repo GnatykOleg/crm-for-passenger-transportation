@@ -27,6 +27,7 @@ import {
   adminRouteRoles,
   dispatcherRouteRoles,
   driverRouteRoles,
+  passangerRouteRoles,
   tripsRouteRoles,
 } from "./rolesArraysForPrivateRouting";
 
@@ -55,6 +56,10 @@ const NotFoundPage = lazy(() => import("../pages/NotFoundPage/NotFoundPage"));
 
 const DriverPage = lazy(() => import("../pages/DriverPage/DriverPage"));
 
+const PassangerPage = lazy(
+  () => import("../pages/PassangerPage/PassangerPage")
+);
+
 const DispatcherPage = lazy(
   () => import("../pages/DispatcherPage/DispatcherPage")
 );
@@ -74,8 +79,6 @@ const PagesRoutes: FC = () => {
         // Get user doc with user inforamiton
         const userDoc = await getUserDoc({ value: user.uid, valueName: "uid" });
 
-        console.log("user", user);
-
         // Destructuring valies from user
         const { uid, email, phoneNumber } = user;
 
@@ -83,11 +86,11 @@ const PagesRoutes: FC = () => {
         dispatch(
           authStateChangeUser({
             uid,
-            displayName: userDoc.userData.displayName,
+            displayName: userDoc?.userData?.displayName,
             email,
             stateChange: true,
             phoneNumber,
-            role: userDoc.userData ? userDoc.userData.role : ROLES.PASSANGER,
+            role: userDoc.userData ? userDoc?.userData?.role : ROLES.PASSANGER,
           })
         );
       }
@@ -124,6 +127,11 @@ const PagesRoutes: FC = () => {
         {/* Driver Page */}
         <Route element={<PrivateRoute roles={driverRouteRoles} />}>
           <Route path={ROUTES.DRIVER} element={<DriverPage />} />
+        </Route>
+
+        {/* Passanger Page */}
+        <Route element={<PrivateRoute roles={passangerRouteRoles} />}>
+          <Route path={ROUTES.PASSANGER} element={<PassangerPage />} />
         </Route>
 
         {/* Home as Auth Page */}

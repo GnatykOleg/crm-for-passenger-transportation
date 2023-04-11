@@ -107,7 +107,7 @@ const AddTripForm: FC = () => {
   // Create passangers options for react select
   const passangersOptions = passangers?.map(({ displayName, uid }) => ({
     value: uid,
-    label: displayName,
+    label: `${displayName} => ${uid}`,
   }));
 
   // On change select drivers
@@ -120,7 +120,7 @@ const AddTripForm: FC = () => {
   const onChangePassangers = (value: TripSelectValue) =>
     setPassangersForTrip((prevState: string[]) => {
       // Set new state
-      const updateState = [...prevState, value!.label];
+      const updateState = [...prevState, value!.value];
 
       // Return only Unique values
       return [...new Set(updateState)];
@@ -142,7 +142,7 @@ const AddTripForm: FC = () => {
       return toast.warn("There are more passengers than a car can take");
 
     // Reset form values
-    resetForm();
+    // resetForm();
 
     // Add trip to redux
     dispatch(
@@ -251,7 +251,7 @@ const AddTripForm: FC = () => {
               return (
                 <>
                   <ListGroup.Item className="d-flex justify-content-between">
-                    <span>Passanger: {value}</span>
+                    <span>Passanger: {value} </span>
                     <Button
                       variant="outline-danger"
                       onClick={() => deletePassanger(value)}

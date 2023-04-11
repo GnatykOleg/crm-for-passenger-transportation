@@ -44,7 +44,7 @@ const PublicRoute: FC = () => {
           setTo(ROUTES.DRIVER);
           break;
         case ROLES.PASSANGER:
-          setTo(ROUTES.TRIPS);
+          setTo(ROUTES.PASSANGER);
           break;
       }
     }

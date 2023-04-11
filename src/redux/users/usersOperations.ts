@@ -9,7 +9,7 @@ import { auth, firestore } from "../../firebase/firebase-config";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 // Interfaces
-import { ITripsForDriver, IUserDoc } from "../../interfaces/redux-types";
+import { ITripsForRole, IUserDoc } from "../../interfaces/redux-types";
 
 // Constants
 import { COLLECTIONS_NAME } from "../../consts/collections";
@@ -77,22 +77,51 @@ export const getAllDrivers = createAsyncThunk<
 
 // Get trips for a driver
 export const getTripsForDriver = createAsyncThunk<
-  Array<ITripsForDriver>,
+  Array<ITripsForRole>,
   string,
   { rejectValue: string }
 >(
   "trips/get-trips-for-driver",
   async (driverId: string, { rejectWithValue, dispatch }) => {
     try {
+      console.log("driverId", driverId);
       // Get trips for driver
       const tripsForDriver = (await getDocumentsByValue({
         value: driverId,
         valueName: "driverID",
         collectionName: COLLECTIONS_NAME.TRIPS,
-      })) as Array<ITripsForDriver>;
+      })) as Array<ITripsForRole>;
 
       // Return trips for driver
       return tripsForDriver;
+    } catch (error: any) {
+      // Catch and throw error with Toast message
+      toast.error(error.message);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Get trips for a driver
+export const getTripsForPassanger = createAsyncThunk<
+  Array<ITripsForRole>,
+  string,
+  { rejectValue: string }
+>(
+  "trips/get-trips-for-passanger",
+  async (passangerId: string, { rejectWithValue, dispatch }) => {
+    try {
+      // Get trips for driver
+      const tripsForPassanger = (await getDocumentsByValue({
+        value: passangerId,
+        valueName: "passangersForTrip",
+        collectionName: COLLECTIONS_NAME.TRIPS,
+        // Collection passangersForTrip its array
+        by: "array-contains",
+      })) as Array<ITripsForRole>;
+
+      // Return trips for driver
+      return tripsForPassanger;
     } catch (error: any) {
       // Catch and throw error with Toast message
       toast.error(error.message);
@@ -178,7 +207,7 @@ export const changeUserNickname = createAsyncThunk<
     });
 
     // Create toast information for admin for successful  change role
-    toast.success("successful change nicknamename");
+    toast.success("Successful change nickname");
 
     // Const Destruct values of user
     const { uid, displayName, email, phoneNumber } = user;

@@ -19,7 +19,14 @@ import { nanoid } from "@reduxjs/toolkit";
 import { ITripCardProps } from "../../../interfaces/components/trips-components-types";
 
 // React Bootstrap
-import { Button, Card, ListGroup, ListGroupItem } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Dropdown,
+  DropdownButton,
+  ListGroup,
+  ListGroupItem,
+} from "react-bootstrap";
 
 // Switch library
 import Switch from "react-switch";
@@ -91,12 +98,16 @@ const TripCard: FC<ITripCardProps> = ({
         </ListGroupItem>
 
         {/* Access to Passangers list only for DISPATCHER and ADMIN */}
-        {access &&
-          passangersForTrip?.map((passanger) => (
-            <ListGroup.Item key={nanoid()}>
-              Passanger: <strong>{passanger}</strong>
-            </ListGroup.Item>
-          ))}
+        <ListGroup.Item className="d-flex justify-content-center">
+          <DropdownButton id="dropdown-basic-button" title="Passanger list">
+            {access &&
+              passangersForTrip?.map((passanger) => (
+                <Dropdown.Item as="p">
+                  Passanger: <strong>{passanger}</strong>
+                </Dropdown.Item>
+              ))}
+          </DropdownButton>
+        </ListGroup.Item>
 
         {/* Access to buttons EDIT and DELETE only for DISPATCHER and ADMIN */}
         {access && (

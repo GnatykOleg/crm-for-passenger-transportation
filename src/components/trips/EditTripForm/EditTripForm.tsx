@@ -27,6 +27,9 @@ import Loader from "../../common/Loader/Loader";
 // React Bootstrap
 import { Button, Card, Form, ListGroup } from "react-bootstrap";
 
+// Redux
+import { nanoid } from "@reduxjs/toolkit";
+
 // Libraries
 import Switch from "react-switch";
 
@@ -39,7 +42,7 @@ const EditTripForm: FC<{ docID: string }> = ({ docID }: { docID: string }) => {
   // Get all trips from data
   const trips = useAppSelector(getAllTripsSelector);
 
-  const tripDataToEdit = trips?.find((el: any) => el.docID === docID)!!;
+  const tripDataToEdit = trips?.find((el) => el.docID === docID)!!;
 
   // Local state
 
@@ -97,7 +100,7 @@ const EditTripForm: FC<{ docID: string }> = ({ docID }: { docID: string }) => {
   // Create passangers options for react select
   const passangersOptions = passangers?.map(({ displayName, uid }) => ({
     value: uid,
-    label: displayName,
+    label: `${displayName} => ${uid}`,
   }));
 
   // On change select drivers
@@ -110,7 +113,7 @@ const EditTripForm: FC<{ docID: string }> = ({ docID }: { docID: string }) => {
   const onChangePassangers = (value: TripSelectValue) =>
     setPassangersForTrip((prevState: string[]) => {
       // Set new state
-      const updateState = [...prevState, value!.label];
+      const updateState = [...prevState, value!.value];
 
       // Return only Unique values
       return [...new Set(updateState)];
@@ -232,17 +235,18 @@ const EditTripForm: FC<{ docID: string }> = ({ docID }: { docID: string }) => {
           <ListGroup variant="flush">
             {passangersForTrip.map((value) => {
               return (
-                <>
-                  <ListGroup.Item className="d-flex justify-content-between">
-                    <span>Passanger: {value}</span>
-                    <Button
-                      variant="outline-danger"
-                      onClick={() => deletePassanger(value)}
-                    >
-                      Delete
-                    </Button>
-                  </ListGroup.Item>
-                </>
+                <ListGroup.Item
+                  key={nanoid()}
+                  className="d-flex justify-content-between"
+                >
+                  <span>Passanger: {value}</span>
+                  <Button
+                    variant="outline-danger"
+                    onClick={() => deletePassanger(value)}
+                  >
+                    Delete
+                  </Button>
+                </ListGroup.Item>
               );
             })}
           </ListGroup>
