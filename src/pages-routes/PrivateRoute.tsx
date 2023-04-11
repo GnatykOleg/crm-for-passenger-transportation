@@ -17,6 +17,7 @@ import { useAppSelector } from "../hooks/redux-hooks";
 
 // Toast library
 import { toast } from "react-toastify";
+import { authDataSelector } from "../redux/auth/authSelectors";
 
 // Declaring a PrivateRoute component using the props type from the IPrivateRouteProps interface:
 const PrivateRoute: FC<IPrivateRouteProps> = ({
@@ -32,7 +33,7 @@ const PrivateRoute: FC<IPrivateRouteProps> = ({
   const from = { from: location };
 
   // Getting the user object from the useAppSelector hook:
-  const user = useAppSelector((state) => state);
+  const user = useAppSelector(authDataSelector);
 
   // Check if the user's role matches one of the roles specified in the props. If yes, return Outlet:
   if (user.role && roles.includes(user.role)) return <Outlet />;

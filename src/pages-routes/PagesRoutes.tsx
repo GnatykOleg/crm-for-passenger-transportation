@@ -28,11 +28,10 @@ import {
   dispatcherRouteRoles,
   driverRouteRoles,
   tripsRouteRoles,
-  userNoRoleRouteRoles,
 } from "./rolesArraysForPrivateRouting";
 
 // Redux
-import { useAppDispatch } from "../hooks/redux-hooks";
+import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks";
 
 import { authStateChangeUser } from "../redux/auth/authOpertions";
 
@@ -41,8 +40,9 @@ import { authStateChangeUser } from "../redux/auth/authOpertions";
 import { getUserDoc } from "../hooks/getUserDoc";
 
 // Components
+import { Loader } from "../components";
 
-import { Spinner } from "react-bootstrap";
+import { authDataSelector } from "../redux/auth/authSelectors";
 
 // Lazy loading pages
 const AuthPage = lazy(() => import("../pages/AuthPage/AuthPage"));
@@ -55,8 +55,6 @@ const NotFoundPage = lazy(() => import("../pages/NotFoundPage/NotFoundPage"));
 
 const DriverPage = lazy(() => import("../pages/DriverPage/DriverPage"));
 
-const NoRolePage = lazy(() => import("../pages/NoRolePage/NoRolePage"));
-
 const DispatcherPage = lazy(
   () => import("../pages/DispatcherPage/DispatcherPage")
 );
@@ -66,6 +64,8 @@ const PagesRoutes: FC = () => {
   // Getting the dispatch func from the useAppDispatch hook:
   const dispatch = useAppDispatch();
 
+  const authLoading = useAppSelector(authDataSelector);
+
   // useEffect to monitor changes in authentication state of the user
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -74,17 +74,20 @@ const PagesRoutes: FC = () => {
         // Get user doc with user inforamiton
         const userDoc = await getUserDoc({ value: user.uid, valueName: "uid" });
 
+        console.log("user", user);
+
         // Destructuring valies from user
-        const { uid, displayName, email } = user;
+        const { uid, email, phoneNumber } = user;
 
         // Dispatch data to state with state change user
         dispatch(
           authStateChangeUser({
             uid,
-            displayName,
+            displayName: userDoc.userData.displayName,
             email,
             stateChange: true,
-            role: userDoc.userData ? userDoc.userData.role : ROLES.NO_ROLE,
+            phoneNumber,
+            role: userDoc.userData ? userDoc.userData.role : ROLES.PASSANGER,
           })
         );
       }
@@ -94,9 +97,12 @@ const PagesRoutes: FC = () => {
     return unsubscribe;
   }, [dispatch]);
 
+  // If loading true return loader
+  if (authLoading.loading) return <Loader />;
+
   // Return the router configuration with routes
   return (
-    <Suspense fallback={<Spinner animation="grow" />}>
+    <Suspense fallback={<Loader />}>
       <Routes>
         {/* PRIVATE ROUTES */}
 
@@ -119,13 +125,6 @@ const PagesRoutes: FC = () => {
         <Route element={<PrivateRoute roles={driverRouteRoles} />}>
           <Route path={ROUTES.DRIVER} element={<DriverPage />} />
         </Route>
-
-        {/* User with no role */}
-        <Route element={<PrivateRoute roles={userNoRoleRouteRoles} />}>
-          <Route path={ROUTES.NO_ROLE} element={<NoRolePage />} />
-        </Route>
-
-        {/* Public ROUTES */}
 
         {/* Home as Auth Page */}
         <Route element={<PublicRoute />}>

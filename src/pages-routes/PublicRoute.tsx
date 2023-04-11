@@ -12,6 +12,7 @@ import { ROLES } from "../consts/roles";
 
 // Redux Hooks
 import { useAppSelector } from "../hooks/redux-hooks";
+import { authDataSelector } from "../redux/auth/authSelectors";
 
 // Declaring a PublicRoute component:
 const PublicRoute: FC = () => {
@@ -25,7 +26,7 @@ const PublicRoute: FC = () => {
   const from = { from: location };
 
   // Getting the user object from the useAppSelector hook:
-  const user = useAppSelector((state) => state);
+  const user = useAppSelector(authDataSelector);
 
   // Using the useEffect hook to handle state changes user.role
   useEffect(() => {
@@ -44,9 +45,6 @@ const PublicRoute: FC = () => {
           break;
         case ROLES.PASSANGER:
           setTo(ROUTES.TRIPS);
-          break;
-        case ROLES.NO_ROLE:
-          setTo(ROUTES.NO_ROLE);
           break;
       }
     }
