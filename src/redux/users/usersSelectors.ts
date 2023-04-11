@@ -1,12 +1,27 @@
 // Interfaces
-import { IState, IUsersSliceState } from "../../interfaces/redux-types";
+import {
+  IState,
+  ITripsForDriver,
+  IUserDoc,
+} from "../../interfaces/redux-types";
 
 // Get users data from redux state
-export const usersDataSelector = (state: IState): IUsersSliceState =>
-  state.users;
+export const getAllUsersSelector = (state: IState): IUserDoc[] | null =>
+  state.users.users;
 
-export const getDriversSelector = (state: IState) => state.users.drivers;
+// Get drivers data from redux state
+export const getDriversSelector = (state: IState): IUserDoc[] | null =>
+  state.users.drivers;
 
-export const getPassangersSelector = (state: IState) => state.users.passangers;
+// Get passangers data from redux state
+export const getPassangersSelector = (state: IState): IUserDoc[] | null =>
+  state.users.passangers;
 
-export const getTripsForDriver = (state: IState) => state.users.tripsForDriver;
+// Get trips for driver data from redux state
+export const getTripsForDriverSelectore = (
+  state: IState
+): ITripsForDriver[] | null => state.users.tripsForDriver;
+
+// Get trips for driver data from redux state
+export const getUsersLoadingStatusSelector = (state: IState) =>
+  state.users.loading;

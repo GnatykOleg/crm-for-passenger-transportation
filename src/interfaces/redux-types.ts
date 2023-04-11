@@ -67,7 +67,7 @@ export interface IRegistrationByEmailProps {
 }
 
 export interface IGetUserDoc {
-  value: string | null;
+  value: string | null | undefined;
   valueName: string;
 }
 

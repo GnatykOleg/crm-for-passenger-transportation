@@ -4,5 +4,5 @@ export const ROLES = Object.freeze({
   PASSANGER: "PASSANGER",
   DRIVER: "DRIVER",
   DISPATCHER: "DISPATCHER",
-  NO_ROLE: "NO_ROLE",
+  // NO_ROLE: "NO_ROLE",
 });
