@@ -1,46 +1,53 @@
-# Getting Started with Create React App
+# CRM For passenger transportation
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## This project is a small CRM for passenger transportation based on roles: ADMIN, DISPATCHER, DRIVER, and PASSANGER.
 
-## Available Scripts
+## Routing
 
-In the project directory, you can run:
+### "/"
+- The main page, is also the authentication page. Available not only for an unauthorized user.
+       Allows you to log in with Email&Passowrd, Facebook, Google, and Phone number.
+       Upon first registration, the user receives the PASSENGER role.
+  - Unauthorized users have access to this route.
+      
+#### "/passanger"
+- The page which automatically redirects an authorized user who has the PASSENGER role.
+       On this page, the user has access to his trips, he can divide them into completed and pending.
+- Access to this route is available to users with the role: ADMIN, PASSANGER.
+      
+#### "/driver"
+- The page which automatically redirects an authorized user who has the DRIVER role.
+       On this page, the user has access to his trips, he can divide them into completed and pending.
+- Access to this route is available to users with the role: ADMIN, DRIVER.
+      
 
-### `npm start`
+#### "/dispatcher"
+- The page which automatically redirects an authorized user who has the DISPATCHER role. On this page, there is a form for adding a trip.
+- Access to this route is available to users with the role: ADMIN, DISPATCHER.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+#### "/trips"
+- A page containing cards with trips and their basic information. The peculiarity is that the card has hidden buttons available only to users with ADMIN and DISPATCHER roles. It is possible to edit and delete a trip. Also, the list of passengers on the trip is available only for ADMIN and DISPATCHER.
+  - Access to this route is available to users with the role: ADMIN, DISPATCHER, DRIVER, or PASSANGER.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+#### "/admin"
+- The page which automatically redirects an authorized user who has the ADMIN role. This page contains a list of all users (excluding ADMIN). Here the administrator can change user roles.
+- Access to this route is available to users with the role: ADMIN.
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### User profile:
+- In the header (in the mobile version of the burger menu) there is a Profile button that displays information about the user, such as (nickname, ID, role, email, or phone number depending on the registration method)
+- Since in the case of registration by phone number, we give the user a random nickname. The profile menu has the functionality of changing the login, for all roles.
 
-### `npm run build`
+#### Technologies used:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- React
+- typescript
+- firebase
+- Redux Toolkit
+- React Bootstrap
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+#### Additional Information:
+- There are comments in the code
+- I checked the application for a long time and found possible errors, but if I suddenly missed something, you can let me know.
+- If you have any questions for the project, be kind, contact me.
