@@ -15,7 +15,6 @@ export interface IAuthSliceState {
   role: null | string;
   loading: boolean;
   error: any;
-  isInitializing: boolean;
 }
 
 export interface ITripsSliceState {
