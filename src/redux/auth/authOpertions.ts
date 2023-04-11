@@ -92,7 +92,7 @@ export const registrationByEmail = createAsyncThunk<
         await addDoc(collection(firestore, COLLECTIONS_NAME.USERS), {
           displayName,
           uid,
-          email,
+          email: user.email,
           // We set no PASSANGER as default
           role: ROLES.PASSANGER,
         });
@@ -101,7 +101,7 @@ export const registrationByEmail = createAsyncThunk<
       return {
         displayName,
         uid,
-        email,
+        email: user.email,
         // We set no PASSANGER as default
         role: ROLES.PASSANGER,
       };

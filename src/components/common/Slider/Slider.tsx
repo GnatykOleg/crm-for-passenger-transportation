@@ -6,6 +6,9 @@ import React, { FC } from "react";
 // React Bootstrap
 import { Carousel } from "react-bootstrap";
 
+// Redux
+import { nanoid } from "@reduxjs/toolkit";
+
 // Images
 import renault from "../../../assets/images/cars/renault.webp";
 import mercedes from "../../../assets/images/cars/mercedes.webp";
@@ -18,7 +21,7 @@ const pictures = [renault, mercedes, transporter];
 const Slider: FC = () => (
   <Carousel>
     {pictures.map((picture) => (
-      <Carousel.Item>
+      <Carousel.Item key={nanoid()}>
         <img
           style={{
             maxHeight: "500px",

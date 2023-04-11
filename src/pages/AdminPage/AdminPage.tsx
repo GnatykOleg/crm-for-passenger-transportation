@@ -22,7 +22,12 @@ import {
 import { Container, Row, Col } from "react-bootstrap";
 
 // Components
-import { SetUserRoleForm, Loader, UserCard } from "../../components";
+import {
+  SetUserRoleForm,
+  Loader,
+  UserCard,
+  Navigation,
+} from "../../components";
 
 // Constants
 import { ROLES } from "../../consts/roles";
@@ -84,31 +89,38 @@ const AdminPage: FC = () => {
 
   // Return JSX
   return (
-    <section className={s.section}>
-      <h2 className="text-center mb-5">Administrator Page</h2>
+    <>
+      <Navigation />
+      <section className={s.section}>
+        <h2 className="text-center mb-5">Administrator Page</h2>
 
-      <Container>
-        <Row>
-          {users
-            // All cards without admin card
-            ?.filter(({ role }) => role !== ROLES.ADMIN)
-            .map((userData) => {
-              return (
-                <Col key={nanoid()} sm={12} md={6} xl={3} className="mb-3">
-                  <UserCard userData={userData} onClick={onClick} />
-                </Col>
-              );
-            })}
-        </Row>
-      </Container>
+        {users && users.length > 0 ? (
+          <Container>
+            <Row>
+              {users
+                // All cards without admin card
+                ?.filter(({ role }) => role !== ROLES.ADMIN)
+                .map((userData) => {
+                  return (
+                    <Col key={nanoid()} sm={12} md={6} xl={3} className="mb-3">
+                      <UserCard userData={userData} onClick={onClick} />
+                    </Col>
+                  );
+                })}
+            </Row>
+          </Container>
+        ) : (
+          <h3 className="text-center mb-5">Sorry no users</h3>
+        )}
 
-      {/* Change user role form */}
-      <SetUserRoleForm
-        show={show}
-        handleShowModal={handleShowModal}
-        user={user}
-      />
-    </section>
+        {/* Change user role form */}
+        <SetUserRoleForm
+          show={show}
+          handleShowModal={handleShowModal}
+          user={user}
+        />
+      </section>
+    </>
   );
 };
 

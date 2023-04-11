@@ -1,28 +1,38 @@
+// Import required dependencies:
+
+// React
 import React, { FC } from "react";
 
+// React Router DOM
 import { useNavigate } from "react-router-dom";
 
+// React Bootstrap
 import { Button, Container } from "react-bootstrap";
 
+// Image
+import notFoundImage from "../../assets/images/page-not-found.png";
+
+// Declaring a PageNotFound component
 const PageNotFound: FC = () => {
+  // Get navigate from useNavigate
   const navigate = useNavigate();
 
+  // Return JSX
   return (
     <Container>
       <img
-        src={
-          "https://pixabay.com/static/uploads/blog/post/2016/01/08/23-16-42-822_640.png"
-        }
+        className="pt-5 mb-5 mx-auto"
+        src={notFoundImage}
         alt="Page Not Found"
         width={800}
-        style={{ paddingTop: 40, marginBottom: 40 }}
       />
 
-      <Button onClick={() => navigate("/", { replace: true })}>
-        Go main page
+      <Button className="d-block mx-auto" onClick={() => navigate(-1)}>
+        Go Back
       </Button>
     </Container>
   );
 };
 
+// Export the PageNotFound component:
 export default PageNotFound;

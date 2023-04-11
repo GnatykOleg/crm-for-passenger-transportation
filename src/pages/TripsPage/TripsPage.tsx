@@ -19,11 +19,17 @@ import {
 import { nanoid } from "@reduxjs/toolkit";
 
 // Components
-import { MyModal, EditTripForm, TripCard, Loader } from "../../components";
+import {
+  MyModal,
+  EditTripForm,
+  TripCard,
+  Loader,
+  Navigation,
+} from "../../components";
 
 // React Bootstrap
 
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Button, Col, Container, Pagination, Row } from "react-bootstrap";
 
 // Import styles module
 import s from "./TripsPage.module.css";
@@ -76,54 +82,61 @@ const TripsPage: FC = () => {
   // if loading true return loader
   if (loading) return <Loader />;
 
-  // Retunr JSX
+  // Return JSX
   return (
-    <section className={s.section}>
-      <h2 className="text-center mb-5">Trips Page</h2>
+    <>
+      <Navigation />
+      <section className={s.section}>
+        <h2 className="text-center mb-5">Trips Page</h2>
 
-      <Container>
-        <Row>
-          {trips?.map((tripData) => {
-            return (
-              <Col key={nanoid()} sm={12} md={6} xl={3} className="mb-3">
-                <TripCard
-                  tripData={tripData}
-                  handleOpenDelete={handleOpenDelete}
-                  handleOpenEdit={handleOpenEdit}
-                />
-              </Col>
-            );
-          })}
-        </Row>
-      </Container>
+        {trips && trips.length > 0 ? (
+          <Container>
+            <Row>
+              {trips?.map((tripData) => {
+                return (
+                  <Col key={nanoid()} sm={12} md={6} xl={3} className="mb-3">
+                    <TripCard
+                      tripData={tripData}
+                      handleOpenDelete={handleOpenDelete}
+                      handleOpenEdit={handleOpenEdit}
+                    />
+                  </Col>
+                );
+              })}
+            </Row>
+          </Container>
+        ) : (
+          <h3 className="text-center mb-5">Sorry no trips yet</h3>
+        )}
 
-      {/* Modals */}
+        {/* Modals */}
 
-      {/* Confrim delete modal */}
-      <MyModal
-        show={openDelete}
-        title="Are you sure to want delete a trip?"
-        handleShowModal={() => setOpenDelete(false)}
-      >
-        <div className="d-flex justify-content-between">
-          <Button onClick={onDeleteClick} variant="outline-danger">
-            Delete
-          </Button>
-          <Button onClick={() => setOpenDelete(false)} variant="primary">
-            Close
-          </Button>
-        </div>
-      </MyModal>
+        {/* Confrim delete modal */}
+        <MyModal
+          show={openDelete}
+          title="Are you sure to want delete a trip?"
+          handleShowModal={() => setOpenDelete(false)}
+        >
+          <div className="d-flex justify-content-between">
+            <Button onClick={onDeleteClick} variant="outline-danger">
+              Delete
+            </Button>
+            <Button onClick={() => setOpenDelete(false)} variant="primary">
+              Close
+            </Button>
+          </div>
+        </MyModal>
 
-      {/* Edit modal */}
-      <MyModal
-        show={openEdit}
-        title="Edit trip"
-        handleShowModal={() => setOpenEdit(false)}
-      >
-        <EditTripForm docID={docID} />
-      </MyModal>
-    </section>
+        {/* Edit modal */}
+        <MyModal
+          show={openEdit}
+          title="Edit trip"
+          handleShowModal={() => setOpenEdit(false)}
+        >
+          <EditTripForm docID={docID} />
+        </MyModal>
+      </section>
+    </>
   );
 };
 

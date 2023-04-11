@@ -86,6 +86,7 @@ const AuthByEmail: FC<IAuthByEmail> = ({
           type="password"
           placeholder="Enter password"
           value={password}
+          minLength={6}
           required
         />
       </Form.Group>

@@ -21,7 +21,7 @@ import { getTripsForDriver } from "../../redux/users/usersOperations";
 import { nanoid } from "@reduxjs/toolkit";
 
 // Components
-import { Loader, TripCard } from "../../components";
+import { Loader, Navigation, TripCard } from "../../components";
 
 // React bootstrap
 import { Button, Col, Container, Row } from "react-bootstrap";
@@ -69,31 +69,39 @@ const DriverPage: FC = () => {
 
   // Return JSX
   return (
-    <section className={s.section}>
-      <h2 className="text-center mb-5">Driver Page</h2>
+    <>
+      <Navigation />
+      <section className={s.section}>
+        <h2 className="text-center mb-5">Driver Page</h2>
 
-      <Button
-        className="d-block mx-auto mb-5"
-        size="lg"
-        variant="outline-info"
-        // Switch if driver want see completed or waiting trips
-        onClick={() => setWaitingTrips((state) => !state)}
-      >
-        {waitingTrips ? "Show completed trips" : "Waiting trips..."}
-      </Button>
-
-      <Container>
-        <Row>
-          {data?.map((tripData) => {
-            return (
-              <Col key={nanoid()} sm={12} md={6} xl={3} className="mb-3">
-                <TripCard tripData={tripData} />
-              </Col>
-            );
-          })}
-        </Row>
-      </Container>
-    </section>
+        {data && data.length > 0 ? (
+          <>
+            <Button
+              className="d-block mx-auto mb-5"
+              size="lg"
+              variant="outline-info"
+              // Switch if driver want see completed or waiting trips
+              onClick={() => setWaitingTrips((state) => !state)}
+            >
+              {waitingTrips ? "Show completed trips" : "Waiting trips..."}
+            </Button>
+            <Container>
+              <Row>
+                {data?.map((tripData) => {
+                  return (
+                    <Col key={nanoid()} sm={12} md={6} xl={3} className="mb-3">
+                      <TripCard tripData={tripData} />
+                    </Col>
+                  );
+                })}
+              </Row>
+            </Container>
+          </>
+        ) : (
+          <h3 className="text-center mb-5">You don't have trips</h3>
+        )}
+      </section>
+    </>
   );
 };
 
