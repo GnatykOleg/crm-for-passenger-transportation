@@ -20,6 +20,6 @@ export interface ITripCard {
 
 export interface ITripCardProps {
   tripData: ITripCard;
-  handleOpenDelete: (documentID: string) => void;
-  handleOpenEdit: (documentID: string) => void;
+  handleOpenDelete?: (documentID: string) => void;
+  handleOpenEdit?: (documentID: string) => void;
 }
