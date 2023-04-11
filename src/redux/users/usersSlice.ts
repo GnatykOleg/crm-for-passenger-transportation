@@ -11,16 +11,22 @@ import {
   getAllPassangers,
   getAllUsers,
   getTripsForDriver,
+  getTripsForPassanger,
 } from "./usersOperations";
 
 // Interfaces
-import { IUserDoc, IUsersSliceState } from "../../interfaces/redux-types";
+import {
+  ITripsForRole,
+  IUserDoc,
+  IUsersSliceState,
+} from "../../interfaces/redux-types";
 
 // Initial state
 const initialState: IUsersSliceState = {
   users: null,
   drivers: null,
   passangers: null,
+  tripsForPassanger: null,
   tripsForDriver: null,
   loading: false,
   error: null,
@@ -93,13 +99,31 @@ const usersSlice = createSlice({
     });
     builder.addCase(
       getTripsForDriver.fulfilled,
-      (state, { payload }: PayloadAction<any>) => {
+      (state, { payload }: PayloadAction<Array<ITripsForRole>>) => {
         state.tripsForDriver = payload;
         state.loading = false;
         state.error = null;
       }
     );
     builder.addCase(getTripsForDriver.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
+
+    // Get trips for passanger
+    builder.addCase(getTripsForPassanger.pending, (state, _) => {
+      state.error = null;
+      state.loading = true;
+    });
+    builder.addCase(
+      getTripsForPassanger.fulfilled,
+      (state, { payload }: PayloadAction<Array<ITripsForRole>>) => {
+        state.tripsForPassanger = payload;
+        state.loading = false;
+        state.error = null;
+      }
+    );
+    builder.addCase(getTripsForPassanger.rejected, (state, action) => {
       state.error = action.payload;
       state.loading = false;
     });

@@ -8,14 +8,14 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks";
 
 // Selectors
 import {
-  getTripsForDriverSelectore,
+  getTripsForPassangerSelectore,
   getUsersLoadingStatusSelector,
 } from "../../redux/users/usersSelectors";
 
 import { authDataSelector } from "../../redux/auth/authSelectors";
 
 // Operations
-import { getTripsForDriver } from "../../redux/users/usersOperations";
+import { getTripsForPassanger } from "../../redux/users/usersOperations";
 
 // Redux
 import { nanoid } from "@reduxjs/toolkit";
@@ -27,39 +27,43 @@ import { Loader, Navigation, TripCard } from "../../components";
 import { Button, Col, Container, Row } from "react-bootstrap";
 
 // Styles module
-import s from "./DriverPage.module.css";
+import s from "./PassangerPage.module.css";
 
-// Declaring a DriverPage component
-const DriverPage: FC = () => {
+// Declaring a PassangerPage component
+const PassangerPage: FC = () => {
   // Local state
 
-  // Waiting trips of driver
+  // Waiting trips of passanger
   const [waitingTrips, setWaitingTrips] = useState<boolean>(true);
 
-  // Get all trips for driver
-  const tripsForDriver = useAppSelector(getTripsForDriverSelectore);
+  // Get all trips for passanger
+  const tripsForPassanger = useAppSelector(getTripsForPassangerSelectore);
+
+  console.log("tripsForPassanger", tripsForPassanger);
 
   // Get loading status
   const loading = useAppSelector(getUsersLoadingStatusSelector);
 
-  // Get driver id from redux
+  // Get passanger id from redux
   const { userId } = useAppSelector(authDataSelector);
 
   // Get dispatch from useAppDispatch hook
   const dispatch = useAppDispatch();
 
-  // Fetch trips for drivers
+  // Fetch trips for passanger
   useEffect(() => {
-    if (userId) dispatch(getTripsForDriver(userId));
+    if (userId) dispatch(getTripsForPassanger(userId));
   }, [dispatch, userId]);
 
   // Filter trips to waiting
-  const tripsToWaiting = tripsForDriver?.filter(
+  const tripsToWaiting = tripsForPassanger?.filter(
     ({ tripStatus }) => !tripStatus
   );
 
   // Filter completed trips
-  const completedTrips = tripsForDriver?.filter(({ tripStatus }) => tripStatus);
+  const completedTrips = tripsForPassanger?.filter(
+    ({ tripStatus }) => tripStatus
+  );
 
   // Resulted data
   const data = waitingTrips ? tripsToWaiting : completedTrips;
@@ -72,15 +76,14 @@ const DriverPage: FC = () => {
     <>
       <Navigation />
       <section className={s.section}>
-        <h2 className="text-center mb-5">Driver Page</h2>
-
+        <h2 className="text-center mb-5">Passanger Page</h2>
         {data && data.length > 0 ? (
           <>
             <Button
               className="d-block mx-auto mb-5"
               size="lg"
               variant="outline-info"
-              // Switch if driver want see completed or waiting trips
+              // Switch if passanger want see completed or waiting trips
               onClick={() => setWaitingTrips((state) => !state)}
             >
               {waitingTrips ? "Show completed trips" : "Waiting trips..."}
@@ -105,5 +108,5 @@ const DriverPage: FC = () => {
   );
 };
 
-// Export the DriverPage component:
-export default DriverPage;
+// Export the PassangerPage component:
+export default PassangerPage;

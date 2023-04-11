@@ -19,3 +19,7 @@ export const dispatcherRouteRoles = [ADMIN, DISPATCHER];
 // Driver page
 // Access: Administator, Driver
 export const driverRouteRoles = [ADMIN, DRIVER];
+
+// Passanger page
+// Access: Administator, Driver
+export const passangerRouteRoles = [ADMIN, PASSANGER];

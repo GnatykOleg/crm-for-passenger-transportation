@@ -6,12 +6,18 @@ export const getDocumentsByValue = async ({
   value,
   valueName,
   collectionName,
-}: any) => {
+  by = "==",
+}: {
+  value: string;
+  valueName: string;
+  collectionName: string;
+  by?: any;
+}) => {
   const docsRef = collection(firestore, collectionName);
 
   // Search query in collection by valueName and value
   // example where("email", "==", email)
-  const searchQuery = query(docsRef, where(valueName, "==", value));
+  const searchQuery = query(docsRef, where(valueName, by, value));
 
   // Get docs for this user by email
   const snapshot = await getDocs(searchQuery);
