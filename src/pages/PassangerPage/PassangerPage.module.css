@@ -1,0 +1,11 @@
+/* Section styles */
+.section {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  height: 100%;
+
+  background-image: url("../../assets/images/passanger.png");
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-size: 20%;
+}
