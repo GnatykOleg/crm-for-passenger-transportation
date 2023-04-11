@@ -11,8 +11,8 @@ export { default as UserCard } from "./users/UserCard/UserCard";
 
 // Trips components
 export { default as AddTripForm } from "./trips/AddTripForm/AddTripForm";
-
 export { default as EditTripForm } from "./trips/EditTripForm/EditTripForm";
+export { default as TripCard } from "./trips/TripCard/TripCard";
 
 // Common components
 export { default as MyModal } from "./common/MyModal/MyModal";
