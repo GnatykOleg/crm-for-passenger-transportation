@@ -50,7 +50,7 @@ export const signInBySocialsAndEmail = async (
       displayName,
       uid,
       email,
-      role: ROLES.NO_ROLE,
+      role: ROLES.PASSANGER,
     });
   }
 
@@ -61,7 +61,7 @@ export const signInBySocialsAndEmail = async (
       displayName,
       uid,
       email,
-      role: ROLES.NO_ROLE,
+      role: ROLES.PASSANGER,
     });
 
   // Get corrent info for first render, if we update document
@@ -75,6 +75,6 @@ export const signInBySocialsAndEmail = async (
     // If userDocChanged.userData exist we set role from Firestore else we set NO ROLE
     role: userDocChanged.userData
       ? userDocChanged.userData.role
-      : ROLES.NO_ROLE,
+      : ROLES.PASSANGER,
   };
 };

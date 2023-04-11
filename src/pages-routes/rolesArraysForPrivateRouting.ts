@@ -2,7 +2,7 @@
 import { ROLES } from "../consts/roles";
 
 // Вestructuring values from roles
-const { ADMIN, PASSANGER, DRIVER, DISPATCHER, NO_ROLE } = ROLES;
+const { ADMIN, PASSANGER, DRIVER, DISPATCHER } = ROLES;
 
 // Admin page
 // Access: Administator
@@ -19,7 +19,3 @@ export const dispatcherRouteRoles = [ADMIN, DISPATCHER];
 // Driver page
 // Access: Administator, Driver
 export const driverRouteRoles = [ADMIN, DRIVER];
-
-// No Role page
-// Access: Administator, No role user
-export const userNoRoleRouteRoles = [ADMIN, NO_ROLE];

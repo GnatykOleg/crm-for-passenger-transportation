@@ -83,7 +83,7 @@ export const registrationByEmail = createAsyncThunk<
         await updateDoc(doc(firestore, COLLECTIONS_NAME.USERS, userDoc.docId), {
           displayName,
           uid,
-          role: ROLES.NO_ROLE,
+          role: ROLES.PASSANGER,
         });
       }
 
@@ -93,8 +93,8 @@ export const registrationByEmail = createAsyncThunk<
           displayName,
           uid,
           email,
-          // We set no role, since then the administrator will give them after
-          role: ROLES.NO_ROLE,
+          // We set no PASSANGER as default
+          role: ROLES.PASSANGER,
         });
 
       // Return data
@@ -102,8 +102,8 @@ export const registrationByEmail = createAsyncThunk<
         displayName,
         uid,
         email,
-        // We set no role, since then the administrator will give them after
-        role: ROLES.NO_ROLE,
+        // We set no PASSANGER as default
+        role: ROLES.PASSANGER,
       };
     } catch (error: any) {
       // Catch and throw error with Toast message
@@ -244,7 +244,7 @@ export const phoneAuth = createAsyncThunk<
           displayName: `user=>${nanoid()}`,
           uid,
           phoneNumber,
-          role: ROLES.NO_ROLE,
+          role: ROLES.PASSANGER,
         });
 
         // Add to user displayName as nickname using nanoid()
@@ -258,7 +258,7 @@ export const phoneAuth = createAsyncThunk<
           displayName: `user=>${nanoid()}`,
           phoneNumber,
           uid,
-          role: ROLES.NO_ROLE,
+          role: ROLES.PASSANGER,
         });
       }
 
@@ -278,7 +278,7 @@ export const phoneAuth = createAsyncThunk<
         // If userDocChanged.userData exist we set role from Firestore else we set NO ROLE
         role: userDocChanged.userData
           ? userDocChanged.userData.role
-          : ROLES.NO_ROLE,
+          : ROLES.PASSANGER,
         email: null,
         phoneNumber,
       };
