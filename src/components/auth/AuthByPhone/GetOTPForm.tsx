@@ -4,7 +4,7 @@
 import React, { FC, useState, FormEvent } from "react";
 
 // Interfaces
-import { IGetOTPFormProps } from "../../../interfaces/components/auth-types";
+import { IGetOTPFormProps } from "../../../interfaces/components/auth-components-types";
 
 // React bootstrap
 import { Button, Form } from "react-bootstrap";
@@ -14,9 +14,6 @@ import PhoneInput from "react-phone-input-2";
 
 // Toast library
 import { toast } from "react-toastify";
-
-// Styles module
-import s from "./AuthByPhone.module.css";
 
 // Phone input styles
 import "react-phone-input-2/lib/style.css";
@@ -49,20 +46,30 @@ const GetOTPForm: FC<IGetOTPFormProps> = ({
   return (
     <>
       <Form onSubmit={onFormSubmit}>
-        <Form.Group className="mb-3" controlId="formBasicPhone">
+        <Form.Group className="visually-hidden" controlId="formBasicPhone">
           <Form.Label>Phone</Form.Label>
         </Form.Group>
 
-        <PhoneInput
-          country={"ua"}
-          value={phone}
-          onChange={(phoneNumber: string) => setPhone("+" + phoneNumber)}
-        />
-        <Button className={s.button} variant="primary" type="submit">
-          Send
+        <div className="d-block w-75 mx-auto">
+          <p className="mb-3 ">Get OTP</p>
+          <PhoneInput
+            inputStyle={{ width: "100%" }}
+            country={"ua"}
+            value={phone}
+            onChange={(phoneNumber: string) => setPhone("+" + phoneNumber)}
+          />
+        </div>
+
+        <Button
+          className="d-block w-50 mx-auto mt-3"
+          variant="primary"
+          type="submit"
+        >
+          Send confirm code
         </Button>
       </Form>
-      <div id="recaptcha-container" />
+
+      <div className="d-block w-75 mx-auto" id="recaptcha-container" />
     </>
   );
 };

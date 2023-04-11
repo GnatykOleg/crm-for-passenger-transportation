@@ -10,7 +10,7 @@ import { useAppDispatch } from "../../../hooks/redux-hooks";
 import { phoneAuth } from "../../../redux/auth/authOpertions";
 
 // Interface
-import { IConfirmOTPFormProps } from "../../../interfaces/components/auth-types";
+import { IConfirmOTPFormProps } from "../../../interfaces/components/auth-components-types";
 
 // React Bootstrap
 import { Button, Form } from "react-bootstrap";
@@ -20,9 +20,6 @@ import OtpInput from "react-otp-input";
 
 // Toast library
 import { toast } from "react-toastify";
-
-// Styles module
-import s from "./AuthByPhone.module.css";
 
 // Declaring a ConfirmOTPForm component using the props type from the IConfirmOTPFormProps interface:
 const ConfirmOTPForm: FC<IConfirmOTPFormProps> = ({
@@ -55,20 +52,29 @@ const ConfirmOTPForm: FC<IConfirmOTPFormProps> = ({
   return (
     <>
       <Form onSubmit={onFormSubmit}>
-        <Form.Group className="mb-3" controlId="formBasicOTP">
-          <Form.Label>Type OTP from SMS code</Form.Label>
+        <Form.Group className="visually-hidden" controlId="formBasicOTP">
+          <Form.Label>Type OTP from SMS code!</Form.Label>
         </Form.Group>
 
-        <OtpInput
-          inputStyle={{ width: "100%" }}
-          value={OTP}
-          onChange={(value) => setOTP(value)}
-          numInputs={6}
-          renderSeparator={<span>-</span>}
-          renderInput={(props) => <input {...props} />}
-        />
+        <div className="d-block w-50 mx-auto">
+          <p className="text-warning text-center mb-3 fs-4">
+            Type code from SMS!
+          </p>
+          <OtpInput
+            inputStyle={{ width: "100%" }}
+            value={OTP}
+            onChange={(value) => setOTP(value)}
+            numInputs={6}
+            renderSeparator={<span>-</span>}
+            renderInput={(props) => <input {...props} />}
+          />
+        </div>
 
-        <Button className={s.button} variant="primary" type="submit">
+        <Button
+          className="d-block w-50 mx-auto mt-3"
+          variant="primary"
+          type="submit"
+        >
           Verify OTP
         </Button>
       </Form>

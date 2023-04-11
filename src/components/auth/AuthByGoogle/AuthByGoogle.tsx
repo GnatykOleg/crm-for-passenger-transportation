@@ -15,9 +15,6 @@ import { Button } from "react-bootstrap";
 // Icon
 import { BsGoogle } from "react-icons/bs";
 
-// Styles module
-import s from "./AuthByGoogle.module.css";
-
 //  Declaring a AuthByGoogle component
 const AuthByGoogle: FC = () => {
   // Get dispatch from hook useAppDispatch
@@ -26,14 +23,14 @@ const AuthByGoogle: FC = () => {
   // Return JSX
   return (
     <Button
-      className={s.button}
+      className="w-50 mx-auto"
       // Dispatch redux operation to redux
       onClick={() => dispatch(googleAuth())}
       variant="outline-primary"
       type="button"
     >
       <BsGoogle />
-      <span className={s.text}>Google</span>
+      <span className="ms-2 fw-bold">Google</span>
     </Button>
   );
 };

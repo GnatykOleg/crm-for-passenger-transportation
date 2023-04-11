@@ -10,13 +10,10 @@ import { useAppDispatch } from "../../../hooks/redux-hooks";
 import {
   IAuthByEmail,
   InputEvent,
-} from "../../../interfaces/components/auth-types";
+} from "../../../interfaces/components/auth-components-types";
 
 // React Bootstrap
 import { Form, Button } from "react-bootstrap";
-
-// Styles module
-import s from "./AuthByEmail.module.css";
 
 // Declaring a AuthByEmail component using the props type from the IAuthByEmail interface:
 const AuthByEmail: FC<IAuthByEmail> = ({
@@ -93,7 +90,7 @@ const AuthByEmail: FC<IAuthByEmail> = ({
         />
       </Form.Group>
 
-      <Button className={s.button} variant="primary" type="submit">
+      <Button className="d-block w-50 mx-auto" variant="primary" type="submit">
         {submitButtonText}
       </Button>
     </Form>
