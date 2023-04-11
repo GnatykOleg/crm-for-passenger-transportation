@@ -15,6 +15,7 @@ export interface IAuthSliceState {
   role: null | string;
   loading: boolean;
   error: any;
+  isInitializing: boolean;
 }
 
 export interface ITripsSliceState {
@@ -36,7 +37,8 @@ export interface IUsersSliceState {
   users: Array<IUserDoc> | null;
   drivers: Array<IUserDoc> | null;
   passangers: Array<IUserDoc> | null;
-  tripsForDriver: Array<ITripsForDriver> | null;
+  tripsForDriver: Array<ITripsForRole> | null;
+  tripsForPassanger: Array<ITripsForRole> | null;
   loading: boolean;
   error: any;
 }
@@ -98,7 +100,7 @@ export interface IUpdateTripInfoProps extends IAddTripInfo {
   docID: string;
 }
 
-export interface ITripsForDriver extends IAddTripInfo {
+export interface ITripsForRole extends IAddTripInfo {
   docID: string;
 }
 

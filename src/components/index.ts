@@ -8,6 +8,7 @@ export { default as AuthByPhone } from "./auth/AuthByPhone/AuthByPhone";
 // Users components
 export { default as SetUserRoleForm } from "./users/SetUserRoleForm/SetUserRoleForm";
 export { default as UserCard } from "./users/UserCard/UserCard";
+export { default as ChangeNickNameForm } from "./users/ChangeNickNameForm/ChangeNickNameForm";
 
 // Trips components
 export { default as AddTripForm } from "./trips/AddTripForm/AddTripForm";
@@ -18,3 +19,4 @@ export { default as TripCard } from "./trips/TripCard/TripCard";
 export { default as MyModal } from "./common/MyModal/MyModal";
 export { default as Loader } from "./common/Loader/Loader";
 export { default as Slider } from "./common/Slider/Slider";
+export { default as Navigation } from "./common/Navigation/Navigation";
