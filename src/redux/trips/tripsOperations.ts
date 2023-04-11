@@ -52,6 +52,9 @@ export const deleteTrip = createAsyncThunk<
 
     // Refetch all trips
     await dispatch(getAllTrips());
+
+    // Get toast for disptacher
+    toast.success("Successful delete trip");
   } catch (error: any) {
     // Catch and throw error with Toast message
     toast.error(error.message);
@@ -75,6 +78,9 @@ export const updateTrip = createAsyncThunk<
       await updateDoc(doc(firestore, COLLECTIONS_NAME.TRIPS, docID), {
         ...updatedTripInfo,
       });
+
+      // Get toast for disptacher
+      toast.success("Successful update trip");
 
       // Refetch all trips
       await dispatch(getAllTrips());
