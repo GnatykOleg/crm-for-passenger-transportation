@@ -15,9 +15,6 @@ import { Button } from "react-bootstrap";
 // Icon
 import { BsFacebook } from "react-icons/bs";
 
-// Styles module
-import s from "./AuthByFacebook.module.css";
-
 //  Declaring a AuthByFacebook component
 const AuthByFacebook: FC = () => {
   // Get dispatch from hook useAppDispatch
@@ -26,14 +23,14 @@ const AuthByFacebook: FC = () => {
   // Return JSX
   return (
     <Button
-      className={s.button}
+      className="w-50 mx-auto"
       // Dispatch redux operation to redux
       onClick={() => dispatch(facebookAuth())}
       variant="outline-primary"
       type="button"
     >
       <BsFacebook />
-      <span className={s.text}>Facebook</span>
+      <span className="ms-2 fw-bold">Facebook</span>
     </Button>
   );
 };

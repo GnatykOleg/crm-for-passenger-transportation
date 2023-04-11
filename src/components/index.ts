@@ -15,3 +15,4 @@ export { default as AddTripForm } from "./trips/AddTripForm/AddTripForm";
 // Common components
 export { default as MyModal } from "./common/MyModal/MyModal";
 export { default as Loader } from "./common/Loader/Loader";
+export { default as Slider } from "./common/Slider/Slider";
