@@ -127,7 +127,7 @@ export const getAllPassangers = createAsyncThunk<
 // Change user role
 export const changeUserRole = createAsyncThunk<
   undefined,
-  { value: string; valueName: string; role: string },
+  { value: string | null | undefined; valueName: string; role: string },
   { rejectValue: string }
 >(
   "users/change-role-users",
@@ -142,7 +142,7 @@ export const changeUserRole = createAsyncThunk<
       });
 
       // Create toast information for admin for successful  change role
-      toast.success("successful  change role");
+      toast.success("Successful  change role");
 
       // Get updated users
       dispatch(getAllUsers());
